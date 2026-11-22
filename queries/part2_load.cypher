@@ -7,14 +7,14 @@ FOR (m:Movie) REQUIRE m.movieId IS UNIQUE;
 CREATE CONSTRAINT genre_name_unique IF NOT EXISTS
 FOR (g:Genre) REQUIRE g.name IS UNIQUE;
 
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/nosql_3/refs/heads/main/import/users.csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/Pasichnyk_nosql_3/refs/heads/main/import/users.csv' AS row
 WITH row WHERE row.userId IS NOT NULL AND trim(row.userId) <> ''
 MERGE (u:User {userId: toInteger(row.userId)})
 SET u.gender = row.gender,
     u.age = toInteger(row.age),
     u.occupation = toInteger(row.occupation);
 
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/nosql_3/refs/heads/main/import/movies.csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/Pasichnyk_nosql_3/refs/heads/main/import/movies.csv' AS row
 WITH row WHERE row.movieId IS NOT NULL AND trim(row.movieId) <> ''
 WITH row,
     CASE
@@ -30,7 +30,7 @@ SET m.title = trim(row.title),
     ELSE [g IN split(row.genres, '|') WHERE trim(g) <> '' | trim(g)]
     END;
 
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/nosql_3/refs/heads/main/import/movies.csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/Pasichnyk_nosql_3/refs/heads/main/import/movies.csv' AS row
 WITH row WHERE row.movieId IS NOT NULL AND row.genres IS NOT NULL
 MATCH (m:Movie {movieId: toInteger(row.movieId)})
 UNWIND split(row.genres, '|') AS genreName
@@ -40,7 +40,7 @@ MERGE (g:Genre {name: genreName})
 MERGE (m)-[:HAS_GENRE]->(g);
 
 CALL apoc.periodic.iterate(
-  "LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/nosql_3/refs/heads/main/import/ratings.csv' AS row
+  "LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/IP-06/Pasichnyk_nosql_3/refs/heads/main/import/ratings.csv' AS row
    WITH row WHERE row.userId IS NOT NULL AND row.movieId IS NOT NULL
    RETURN toInteger(row.userId) AS userId,
         toInteger(row.movieId) AS movieId,
